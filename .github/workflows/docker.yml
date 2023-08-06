@@ -31,7 +31,7 @@ jobs:
         - linux/arm64
     defaults:
       run:
-        working-directory: ./src
+        working-directory: build
     outputs:
       tag: ${{ steps.get_version.outputs.VERSION }}
     steps:
@@ -39,6 +39,7 @@ jobs:
       run: |
         git clone --depth=1 ${{ inputs.remote }} .
         git reset --hard ${{ inputs.commitHash }}
+        rm .gitkeep
     - name: Get version
       id: get_version
       run: |
