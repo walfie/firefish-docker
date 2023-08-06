@@ -18,7 +18,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.event.repository.name }}/firefish
+  IMAGE_NAME: ${{ github.repository_owner }}/firefish
 
 permissions:
   contents: read
