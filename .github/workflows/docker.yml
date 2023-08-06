@@ -7,9 +7,10 @@ on:
         description: Remote repository
         required: true
         default: "git@gitlab.com:walfie/firefish.git"
-      commitHash:
-        description: Commit hash
+      branch:
+        description: Branch to release
         required: true
+        default: walfie
 
 env:
   REGISTRY: ghcr.io
@@ -37,14 +38,15 @@ jobs:
     steps:
     - name: Checkout
       run: |
-        git clone --depth=1 ${{ inputs.remote }} .
-        git reset --hard ${{ inputs.commitHash }}
         rm .gitkeep
+        git clone --depth=1 ${{ inputs.remote }} .
+        git checkout ${{ inputs.branch }}
     - name: Get version
       id: get_version
       run: |
+        COMMIT_HASH="$(git rev-parse --short HEAD)"
         BASE_VERSION="$(jq .version <package.json)"
-        echo "VERSION=v$BASE_VERSION-$PRERELEASE_PREFIX+${{ inputs.commitHash }}" >>$GITHUB_OUTPUT
+        echo "VERSION=v$BASE_VERSION-$PRERELEASE_PREFIX+$COMMIT_HASH" >>$GITHUB_OUTPUT
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v4
