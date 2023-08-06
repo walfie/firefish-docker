@@ -3,12 +3,15 @@ name: Docker
 on:
   workflow_dispatch:
     inputs:
+      remote:
+        description: Remote repository
+        required: true
+        default: "git@gitlab.com:walfie/firefish.git"
       commitHash:
         description: Commit hash
         required: true
 
 env:
-  SOURCE_REPO: git@gitlab.com:walfie/firefish.git
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   PRERELEASE_PREFIX: walfie
@@ -34,8 +37,7 @@ jobs:
     steps:
     - name: Checkout
       run: |
-        git clone --depth=1 ${{ env.SOURCE_REPO }} src
-        cd src
+        git clone --depth=1 ${{ inputs.remote }} .
         git reset --hard ${{ inputs.commitHash }}
     - name: Get version
       id: get_version
