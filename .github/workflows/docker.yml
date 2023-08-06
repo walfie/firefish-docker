@@ -115,7 +115,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v4
       with:
-        images: ${{ env.IMAGE_NAME }}
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         labels: |
           org.opencontainers.image.revision=${{ needs.build.outputs.revisionFull }}
           org.opencontainers.image.source=${{ inputs.remote }}
