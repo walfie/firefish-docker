@@ -36,6 +36,7 @@ jobs:
     outputs:
       tag: ${{ steps.get_version.outputs.TAG }}
       revision: ${{ steps.get_version.outputs.REVISION }}
+      revisionFull: ${{ steps.get_version.outputs.REVISION_FULL }}
     steps:
     - name: Checkout
       run: |
@@ -45,11 +46,13 @@ jobs:
       id: get_version
       run: |
         REVISION="$(git rev-parse --short HEAD)"
+        REVISION_FULL="$(git rev-parse HEAD)"
         BASE_VERSION="$(jq -r .version <package.json | cut -d- -f1)"
         TAG="v$BASE_VERSION-${{ inputs.prereleaseId }}+$REVISION"
 
         echo "Releasing tag '$TAG'"
         echo "REVISION=$REVISION" >>$GITHUB_OUTPUT
+        echo "REVISION_FULL=$REVISION_FULL" >>$GITHUB_OUTPUT
         echo "TAG=$TAG" >>$GITHUB_OUTPUT
     - name: Docker meta
       id: meta
@@ -57,7 +60,7 @@ jobs:
       with:
         images: ${{ env.IMAGE_NAME }}
         labels: |
-          org.opencontainers.image.revision=${{ steps.get_version.outputs.REVISION }}
+          org.opencontainers.image.revision=${{ steps.get_version.outputs.REVISION_FULL }}
           org.opencontainers.image.source=${{ inputs.remote }}
           org.opencontainers.image.url=${{ inputs.remote }}
         tags: |
@@ -114,11 +117,11 @@ jobs:
       with:
         images: ${{ env.IMAGE_NAME }}
         labels: |
-          org.opencontainers.image.revision=${{ needs.build.outputs.revision }}
+          org.opencontainers.image.revision=${{ needs.build.outputs.revisionFull }}
           org.opencontainers.image.source=${{ inputs.remote }}
           org.opencontainers.image.url=${{ inputs.remote }}
         tags: |
-          type=raw,value=${{ needs.build.outputs.version }}
+          type=raw,value=${{ needs.build.outputs.tag }}
           type=raw,value=latest
     - name: Log in to container registry
       uses: docker/login-action@v2
