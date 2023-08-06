@@ -6,7 +6,7 @@ on:
       remote:
         description: Remote repository
         required: true
-        default: "git@gitlab.com:walfie/firefish.git"
+        default: https://gitlab.com/walfie/firefish.git
       branch:
         description: Branch to release
         required: true
