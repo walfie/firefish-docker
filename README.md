@@ -1,4 +1,4 @@
-# Firefish
+# firefish-docker
 
-Repository containing GitHub Actions workflows for building Firefish from my personal fork.
+GitHub Actions workflows for building Docker images for [Firefish](https://git.joinfirefish.org/firefish/firefish) from [my personal fork](https://gitlab.com/walfie/firefish).
 
