@@ -30,15 +30,11 @@ jobs:
         platform:
         - linux/amd64
         - linux/arm64
-    defaults:
-      run:
-        working-directory: build
     outputs:
       tag: ${{ steps.get_version.outputs.VERSION }}
     steps:
     - name: Checkout
       run: |
-        rm .gitkeep
         git clone --depth=1 ${{ inputs.remote }} .
         git checkout ${{ inputs.branch }}
     - name: Get version
