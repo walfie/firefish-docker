@@ -1,6 +1,10 @@
 # https://docs.docker.com/build/ci/github-actions/multi-platform/#distribute-build-across-multiple-runners
 name: Docker
 on:
+  # Build every Mon/Thurs to keep the cache fresh (cache expires after 7 days)
+  # https://docs.github.com/en/actions/using-workflows/caching-dependencies-to-speed-up-workflows#usage-limits-and-eviction-policy
+  schedule:
+  - cron: "0 0 * * 1,4"
   workflow_dispatch:
     inputs:
       remote:
@@ -11,7 +15,7 @@ on:
         description: Branch to release
         required: true
         default: walfie
-      prereleaseId:
+      prerelease_id:
         description: Pre-release identifier
         required: true
         default: walfie
@@ -48,7 +52,7 @@ jobs:
         REVISION="$(git rev-parse --short HEAD)"
         REVISION_FULL="$(git rev-parse HEAD)"
         BASE_VERSION="$(jq -r .version <package.json | cut -d- -f1)"
-        TAG="v$BASE_VERSION-${{ inputs.prereleaseId }}+$REVISION"
+        TAG="v$BASE_VERSION-${{ inputs.prerelease_id }}+$REVISION"
 
         echo "Releasing tag '$TAG'"
         echo "REVISION=$REVISION" >>$GITHUB_OUTPUT
