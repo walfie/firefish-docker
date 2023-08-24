@@ -6,23 +6,13 @@ on:
   schedule:
   - cron: "0 0 * * 1,4"
   workflow_dispatch:
-    inputs:
-      remote:
-        description: Remote repository
-        required: true
-        default: https://gitlab.com/walfie/firefish.git
-      branch:
-        description: Branch to release
-        required: true
-        default: walfie
-      prerelease_id:
-        description: Pre-release identifier
-        required: true
-        default: walfie
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository_owner }}/firefish
+  REMOTE: https://gitlab.com/walfie/firefish.git
+  BRANCH: walfie
+  PRERELEASE_ID: walfie
 
 permissions:
   contents: read
@@ -44,15 +34,15 @@ jobs:
     steps:
     - name: Checkout
       run: |
-        git clone --depth=1 ${{ inputs.remote }} .
-        git checkout ${{ inputs.branch }}
+        git clone --depth=1 ${{ env.REMOTE }} .
+        git checkout ${{ env.BRANCH }}
     - name: Get version
       id: get_version
       run: |
         REVISION="$(git rev-parse --short HEAD)"
         REVISION_FULL="$(git rev-parse HEAD)"
         BASE_VERSION="$(jq -r .version <package.json | cut -d- -f1)"
-        TAG="v$BASE_VERSION-${{ inputs.prerelease_id }}+$REVISION"
+        TAG="v$BASE_VERSION-${{ env.PRERELEASE_ID }}+$REVISION"
 
         echo "Releasing tag '$TAG'"
         echo "REVISION=$REVISION" >>$GITHUB_OUTPUT
@@ -65,8 +55,8 @@ jobs:
         images: ${{ env.IMAGE_NAME }}
         labels: |
           org.opencontainers.image.revision=${{ steps.get_version.outputs.REVISION_FULL }}
-          org.opencontainers.image.source=${{ inputs.remote }}
-          org.opencontainers.image.url=${{ inputs.remote }}
+          org.opencontainers.image.source=${{ env.REMOTE }}
+          org.opencontainers.image.url=${{ env.REMOTE }}
         tags: |
           type=raw,value=${{ steps.get_version.outputs.TAG }}
           type=raw,value=latest
@@ -122,8 +112,8 @@ jobs:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         labels: |
           org.opencontainers.image.revision=${{ needs.build.outputs.revisionFull }}
-          org.opencontainers.image.source=${{ inputs.remote }}
-          org.opencontainers.image.url=${{ inputs.remote }}
+          org.opencontainers.image.source=${{ env.REMOTE }}
+          org.opencontainers.image.url=${{ env.REMOTE }}
         tags: |
           type=raw,value=${{ needs.build.outputs.tag }}
           type=raw,value=latest
